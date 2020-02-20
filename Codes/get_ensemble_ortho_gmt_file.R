@@ -15,6 +15,8 @@ INPUT_NAME = 'rat_Rnor'
 
 source('Codes/convert_human_to_ortholog_functions.R')
 
+# Ptbrc
+
 files <- list.files(PATH_TO_FILES, include.dirs = T, full.names = T, pattern = '*.tsv')
 liver_files <- lapply(files, function(x) read.delim(x))
 lapply(liver_files, head)

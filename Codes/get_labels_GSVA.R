@@ -16,12 +16,23 @@ INPUT_FILE = args[2]
 PATH_TO_FILES = 'Data/McParland_markers/SUPPLEMENTARY_DATA/liver/'
 OUTPUT_NAME = gsub('.rds','',gsub('2.seur_dimRed_','',INPUT_FILE ))
 
+
+### rownames need to be in ensembl
+input_from_10x <- paste0("Data/", INPUT_NAME,'/')
+seur_genes_df <- read.delim(paste0(input_from_10x,'genes.tsv'), header = F)
+seur[['RNA']] <- AddMetaData(seur[['RNA']], seur_genes_df$V1, col.name = 'ensembl')
+
+
+
+
+# load('Results/rat_Rnor/clusters/clusters_rat_Rnor_mito_40_lib_1500.RData')
 candidateGenes_mapped_df <- readRDS(paste0(PATH_TO_FILES,'candidateGenes_mapped_table.rds'))
 candidateGenes_mapped <- lapply(candidateGenes_mapped_df, 
                                 function(x) getUnemptyList(x$rnorvegicus_homolog_ensembl_gene))
 
 seur <- readRDS(paste0('objects/',INPUT_NAME,'/',INPUT_FILE))
 exprMatrix <- as.matrix(seur[['RNA']]@data)
+colnames(exprMatrix) <- as.character(seur$SCT_snn_res.1.25)
 
 
 #### CHECK THE METHOD AND PARAMETERS OF EACH !!!!
@@ -33,7 +44,11 @@ saveRDS(gsva_result, paste0('Results/',INPUT_NAME,'/GSVA/GSVA_',OUTPUT_NAME,'.rd
 
 
 ### Gene set enrichment analysis
-# fgseaRes <- fgseaLabel(candidateGenes_mapped, exprMatrix, as.numeric(as.factor(colnames(exprMatrix))), nperm = 1000)
+library(fgsea)
+colnames(exprMatrix) <- colnames(seur)
+fgseaRes <- fgseaLabel(candidateGenes_mapped, exprMatrix, as.numeric(colnames(exprMatrix)), nperm = 1000)
+
+
 
 
 

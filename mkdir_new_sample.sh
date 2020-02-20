@@ -7,4 +7,6 @@ mkdir Results/${input_name}
 mkdir Results/${input_name}/QC
 mkdir Results/${input_name}/AUCell
 mkdir Results/${input_name}/SCINA
+mkdir Results/${input_name}/clusters
+mkdir Results/${input_name}/markers
 

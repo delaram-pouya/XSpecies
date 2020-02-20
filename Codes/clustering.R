@@ -1,18 +1,34 @@
-#!/usr/bin/env Rscript
+## Run this script as: 
+# Rscript Codes/get_labels_AUCell.R 'rat_Rnor' '2.seur_dimRed_rat_Rnor_mito_50_lib_1500.rds'
+
+options(echo=TRUE) # if you want see commands in output file
+args <- commandArgs(trailingOnly = TRUE)
+print(args)
+
+
 
 source('Codes/Functions.R')
 Initialize()
-seur <- readRDS('objects/rat_Sham_Da_M_10WK_004_strained/2.seur_dimRed_rat_Sham_Da.rds')
-n_pc = 20
-max_seurat_resolution <- 1.8
-## ^ change this to something large (5?) to ensure iterations stop eventually.
-output_filename <- "objects/rat_Sham_Da_M_10WK_004_strained/3.seur_clustered_rat_Sham_Da.RData"
+
+INPUT_NAME = args[1] 
+INPUT_FILE = args[2]
+# INPUT_NAME = 'rat_Rnor'
+# INPUT_FILE = '2.seur_dimRed_rat_Rnor_mito_40_lib_1500.rds'
+PATH_TO_FILES = 'Data/McParland_markers/SUPPLEMENTARY_DATA/liver/'
+OUTPUT_NAME = gsub('.rds','',gsub('2.seur_dimRed_','',INPUT_FILE ))
+
+
+seur <- readRDS(paste0('objects/',INPUT_NAME,'/',INPUT_FILE))
+PC_NUMBER = 18
+max_seurat_resolution <- 1.8 ## change this to higher values
+
+output_filename <- paste0('Results/',INPUT_NAME,'/clusters/clusters_',OUTPUT_NAME,'.RData')
 FDRthresh <- 0.01 # FDR threshold for statistical tests
 min_num_DE <- 10
 seurat_resolution <- 0 # Starting resolution is this plus the jump value below.
 seurat_resolution_jump <- 0.05
 
-seur <- FindNeighbors(seur,reduction="pca",dims=1:n_pc,verbose=F)
+seur <- FindNeighbors(seur,reduction="pca",dims=1:PC_NUMBER,verbose=F)
 
 sCVdata_list <- list()
 DE_bw_clust <- TRUE
@@ -75,11 +91,6 @@ while(DE_bw_clust) {
   
   sCVdata_list[[paste0("res.",seurat_resolution)]] <- curr_sCVdata
 }
-
-
-# cleaning redundant metadata
-# seur@meta.data <- seur@meta.data[,colnames(seur@meta.data) != "seurat_clusters"]
-# seur@meta.data <- seur@meta.data[,!grepl("^SCT_snn_res",colnames(seur@meta.data))]
 
 # shrinks the size of the Seurat object by removing the scaled matrix
 seur <- DietSeurat(seur,dimreducs=Reductions(seur))
