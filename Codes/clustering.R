@@ -1,5 +1,5 @@
 ## Run this script as: 
-# Rscript Codes/get_labels_AUCell.R 'rat_Rnor' '2.seur_dimRed_rat_Rnor_mito_50_lib_1500.rds'
+# Rscript Codes/clustering.R 'mouse' '2.seur_dimRed_mouse_mito_50_lib_1500.rds'
 
 options(echo=TRUE) # if you want see commands in output file
 args <- commandArgs(trailingOnly = TRUE)
@@ -12,8 +12,8 @@ Initialize()
 
 INPUT_NAME = args[1] 
 INPUT_FILE = args[2]
-# INPUT_NAME = 'rat_Rnor'
-# INPUT_FILE = '2.seur_dimRed_rat_Rnor_mito_40_lib_1500.rds'
+# INPUT_NAME = 'mouse'
+# INPUT_FILE = '2.seur_dimRed_mouse_mito_40_lib_1500.rds'
 PATH_TO_FILES = 'Data/McParland_markers/SUPPLEMENTARY_DATA/liver/'
 OUTPUT_NAME = gsub('.rds','',gsub('2.seur_dimRed_','',INPUT_FILE ))
 
@@ -26,7 +26,7 @@ output_filename <- paste0('Results/',INPUT_NAME,'/clusters/clusters_',OUTPUT_NAM
 FDRthresh <- 0.01 # FDR threshold for statistical tests
 min_num_DE <- 10
 seurat_resolution <- 0 # Starting resolution is this plus the jump value below.
-seurat_resolution_jump <- 0.05
+seurat_resolution_jump <- 0.2
 
 seur <- FindNeighbors(seur,reduction="pca",dims=1:PC_NUMBER,verbose=F)
 
@@ -92,7 +92,11 @@ while(DE_bw_clust) {
   sCVdata_list[[paste0("res.",seurat_resolution)]] <- curr_sCVdata
 }
 
+
 # shrinks the size of the Seurat object by removing the scaled matrix
 seur <- DietSeurat(seur,dimreducs=Reductions(seur))
 save(sCVdata_list,seur,file=output_filename)
+
+
+
 

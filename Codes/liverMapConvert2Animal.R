@@ -19,7 +19,7 @@ candidateGenes <- unique(unlist(candidateGenes))
 
 
 ### McParland liver map- 2018
-path_to_markers <- 'Data/McParland_markers'
+path_to_markers <- 'Data/McParland_markers/paper_marker/'
 Known_markers <-list.files(path_to_markers, pattern = '.csv', full.names = T)
 file_names <- list.files(path_to_markers, pattern = '.csv')
 file_names <- substr(file_names,1, nchar(file_names)-4)
